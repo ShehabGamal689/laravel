@@ -5,6 +5,6 @@
     <title>Shehab Custom Laravel Page</title>
   </head>
   <body>
-    <h1>uckk baaa2a </h1>
+    <h1>shebo </h1>
   </body>
 </html>

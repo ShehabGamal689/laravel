@@ -1,34 +1,42 @@
 name: Backend CI/CD
 
+# Trigger workflow on pushes to the 12.x branch
 on:
   push:
     branches: [ "12.x" ]
 
 jobs:
   test:
-    name: Run Laravel tests
+    name: Run Laravel Test Suite
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository code to the runner
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      # Set up PHP environment with required extensions
+      - name: Setup PHP Environment
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+          # Essential PHP extensions for Laravel
           extensions: mbstring, xml, curl, mysql, sqlite
           coverage: none
 
-      - name: Install Composer dependencies
+      # Install PHP dependencies via Composer
+      - name: Install Composer Dependencies
         run: |
           composer install --no-interaction --no-progress
 
-      - name: Prepare environment for tests
+      # Configure test environment
+      - name: Configure Test Environment
         run: |
+          # Create environment file from example
           cp .env.example .env
+          # Generate application encryption key
           php artisan key:generate
-          # Use sqlite for tests so we don't hit RDS
+          # Configure SQLite database for isolated testing
           php -r '
             $env = file_get_contents(".env");
             $env = preg_replace("/DB_CONNECTION=.*/", "DB_CONNECTION=sqlite", $env);
@@ -36,24 +44,32 @@ jobs:
             file_put_contents(".env", $env);
           '
 
-      - name: Run tests
+      # Execute Laravel test suite
+      - name: Execute Test Suite
         run: |
           php artisan test
 
   deploy:
-    name: Deploy to backend server
+    name: Deploy to Production Server
     runs-on: ubuntu-latest
-    needs: test   # only run if tests pass
+    # Only deploy if tests pass
+    needs: test   
 
     steps:
+      # Checkout code 
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH agent
+      # Set up SSH agent for secure server access
+      - name: Configure SSH Authentication
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to backend server
+      # Deploy application backend server
+      - name: Deploy Application
         run: |
+          # Execute deployment script on remote server via SSH
+          # - Suppress MOTD/banner messages for clean output
+          # - Use bash to execute the deployment script
           echo 'cd /var/www/laravel && bash deploy.sh' | ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_BACKEND }} bash

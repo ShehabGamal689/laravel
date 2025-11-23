@@ -5,6 +5,6 @@
     <title>Shehab Custom Laravel Page</title>
   </head>
   <body>
-    <h1>WELCOME SHEHAB GAMAL again</h1>
+    <h1>WELCOME SHEHAB GAMAL </h1>
   </body>
 </html>

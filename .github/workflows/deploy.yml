@@ -56,8 +56,4 @@ jobs:
 
       - name: Deploy to backend server
         run: |
-          ssh -o StrictHostKeyChecking=no -tt ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_BACKEND }} << 'EOF'
-          set -e
-          echo "Running remote deployment script..."
-          /var/www/laravel/deploy.sh
-          EOF
+          echo 'cd /var/www/laravel && ./deploy.sh' | ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_BACKEND }} bash

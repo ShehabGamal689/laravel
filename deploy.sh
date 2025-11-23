@@ -6,6 +6,15 @@ APP_DIR="/var/www/laravel"
 cd "$APP_DIR"
 
 echo "=== Deploy script started at $(date) ==="
+
+# Debug info
+echo "Git status before deployment:"
+git status --short
+
+echo "Cleaning working directory..."
+git reset --hard HEAD
+git clean -fd
+
 echo "Pulling latest changes from 12.x..."
 git fetch origin
 git checkout 12.x
@@ -13,6 +22,9 @@ git reset --hard origin/12.x
 
 echo "Current commit on server:"
 git rev-parse HEAD
+
+echo "Git status after deployment:"
+git status --short
 
 echo "Installing composer dependencies..."
 composer install --no-dev --optimize-autoloader

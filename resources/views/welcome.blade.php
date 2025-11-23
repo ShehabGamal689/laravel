@@ -5,6 +5,6 @@
     <title>Shehab Custom Laravel Page</title>
   </head>
   <body>
-    <h1>shebo </h1>
+    <h1>shebo gay</h1>
   </body>
 </html>

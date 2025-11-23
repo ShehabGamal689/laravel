@@ -2,7 +2,7 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "12.x" ]
 
 jobs:
   test:

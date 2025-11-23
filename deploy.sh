@@ -1,44 +1,24 @@
 #!/usr/bin/env bash
 set -e
 
-APP_DIR="/var/www/laravel"
+cd /var/www/laravel
 
-cd "$APP_DIR"
+echo "Starting deployment..."
 
-echo "=== Deploy script started at $(date) ==="
-
-# Debug info
-echo "Git status before deployment:"
-git status --short
-
-echo "Cleaning working directory..."
-git reset --hard HEAD
-git clean -fd
-
-echo "Pulling latest changes from 12.x..."
+# Update code
 git fetch origin
-git checkout 12.x
 git reset --hard origin/12.x
 
-echo "Current commit on server:"
-git rev-parse HEAD
-
-echo "Git status after deployment:"
-git status --short
-
-echo "Installing composer dependencies..."
+# Install dependencies and run migrations
 composer install --no-dev --optimize-autoloader
-
-echo "Running migrations..."
 php artisan migrate --force
 
-echo "Clearing and caching config/routes/views..."
+# Clear caches
 php artisan config:clear
 php artisan cache:clear
 php artisan view:clear
-php artisan route:cache || true
 
-echo "Reloading PHP-FPM if available..."
+# Reload PHP-FPM if available
 sudo systemctl reload php8.2-fpm 2>/dev/null || true
 
-echo "Deployment finished successfully."
+echo "Deployment successful"
